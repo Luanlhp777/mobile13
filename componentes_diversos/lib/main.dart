@@ -15,20 +15,39 @@ class _MeuAppState extends State<MeuApp> {
 
   bool ligado = false;
 
-  bool aceito = false;
+  bool aceito = true;
 
-  double valor = 50;
+  double valor = 1;
 
   String opcao = "A";
 
-  void clicarIcone() {
-    print("Clicou no coração");
+  double total = 15;
+
+  void calcularTotal() {
+    double precoLanche = 0;
+
+    if (opcao == "A") {
+      precoLanche = 10;
+    } else if (opcao == "B") {
+      precoLanche = 15;
+    } else {
+      precoLanche = 20;
+    }
+
+    double adicionarQueijo = aceito ? 5 : 0;
+    double taxaEntrega = ligado ? 8: 0;
+
+    total = (precoLanche + adicionarQueijo) * valor + taxaEntrega;
   }
+
+  // void clicarIcone() {
+  //   print("Clicou no coração");
+  // }===ICONE DO CORAÇÃO===
 
   void alterarSwitch(bool novoValor) {
     setState(() {
-
       ligado = novoValor;
+      calcularTotal();
 
       print(novoValor);
     });
@@ -38,6 +57,8 @@ class _MeuAppState extends State<MeuApp> {
 
     setState(() {
       aceito = novoValor;
+      calcularTotal();
+
       print(novoValor);
     });
   }
@@ -46,6 +67,8 @@ class _MeuAppState extends State<MeuApp> {
     
     setState(() {
       valor = novoValor;
+      calcularTotal();
+
       print(novoValor);
     });
   }
@@ -54,6 +77,8 @@ class _MeuAppState extends State<MeuApp> {
 
     setState(() {
       opcao = novaOpcao;
+      calcularTotal();
+
       print(novaOpcao);
     });
   }
@@ -64,7 +89,8 @@ class _MeuAppState extends State<MeuApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Galeria de Widgets"),
+          title: Text("Lanchonete"),
+          centerTitle: true,
         ),
 
         body: Padding(
@@ -74,29 +100,37 @@ class _MeuAppState extends State<MeuApp> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              Text("IconButton"),
+              Text("Escolha o lanche"),
 
-              IconButton(
-                icon: Icon(Icons.favorite),
-                onPressed: clicarIcone,
-              ),
+              SegmentedButton<String>(
+                segments: [
+                  ButtonSegment(
+                    value: "A",
+                    label: Text("X-Burger (R\$10)"),
+                  ),
+                  ButtonSegment(
+                    value: "B",
+                    label: Text("X-Salada (R\$15)"),
+                  ),
+                  ButtonSegment(
+                    value: "C",
+                    label: Text("X-Tudo (R\$20)"),
+                  ),
+                ],
 
-              SizedBox(height: 20),
+                selected: {opcao},
 
-                // ======SWITCH=======
-              Text("Switch"),
-
-              Switch(
-                value: ligado,
-                onChanged: (valor) {
-                  alterarSwitch(valor);
+                onSelectionChanged: (novaSelecao) {
+                  alterarOpcao(novaSelecao.first);
                 },
               ),
+
+            
 
               SizedBox(height: 20),
 
               // ======CHECKBOX==========
-              Text("Checkbox"),
+              Text("Adicionar Queijo (+ R\$5)"),
 
               Checkbox(
                 value: aceito, 
@@ -107,40 +141,48 @@ class _MeuAppState extends State<MeuApp> {
 
               SizedBox(height: 20),
 
-              // ======= SLIDER ======
-              Text("Slider: ${valor.toInt()}"),
+                  // ======SWITCH=======
+              Text("Entrega (+ R\$8)"),
 
-              Slider(
-                min: 0,
-
-                max: 100,
-
-                value: valor,
-
-                onChanged: (novoValor) {
-                  alterarSlider(novoValor);
+              Switch(
+                value: ligado,
+                onChanged: (valor) {
+                  alterarSwitch(valor);
                 },
               ),
 
               SizedBox(height: 20),
 
-              // ===== SEGMENTED BUTTON ===========
-              Text("SegmentedButton"),
+              // ======= SLIDER ======
+              Text("Quantidade: ${valor.toInt()}"),
 
-              SegmentedButton<String> (
-                segments: [
-
-                  ButtonSegment(value: "A", label: Text("Opção A")),
-                  ButtonSegment(value: "B", label: Text("Opção B")),
-                  ButtonSegment(value: "C", label: Text("Opção C")),
-                ],
-
-                selected: {opcao},
-
-                onSelectionChanged: (novaSelecao) {
-                  alterarOpcao(novaSelecao.first);
+              Slider(
+                min: 1,
+                max: 10,
+                divisions: 9,
+                value: valor,
+                onChanged: (novoValor) {
+                  alterarSlider(novoValor);
                 },
-              ),            
+              ),
+
+              SizedBox(height: 30),
+
+                // IconButton(
+              //   icon: Icon(Icons.favorite),
+              //   onPressed: clicarIcone,
+              // ), ===ICONE DO CORAÇÃO===
+
+              // ===== TOTAL ======
+              Text(
+                "Total: R\$ ${total.toStringAsFixed(2)}",
+                
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  
+                ),
+              ),
             ],
           ),
         ),
